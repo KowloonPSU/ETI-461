@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movie.mapper.TVMapper">
+    
+    <resultMap type="TV" id="TVResult">
+        <result property="tvName"    column="TV_Name"    />
+        <result property="tvGenre"    column="TV_Genre"    />
+        <result property="tvLength"    column="TV_Length"    />
+        <result property="tvDirector"    column="TV_Director"    />
+        <result property="tvYear"    column="TV_Year"    />
+        <result property="tvLanguage"    column="TV_Language"    />
+        <result property="tvCc"    column="TV_CC"    />
+    </resultMap>
+
+    <sql id="selectTVVo">
+        select TV_Name, TV_Genre, TV_Length, TV_Director, TV_Year, TV_Language, TV_CC from TV
+    </sql>
+
+    <select id="selectTVList" parameterType="TV" resultMap="TVResult">
+        <include refid="selectTVVo"/>
+        <where>  
+            <if test="tvGenre != null  and tvGenre != ''"> and TV_Genre = #{tvGenre}</if>
+            <if test="tvLength != null  and tvLength != ''"> and TV_Length = #{tvLength}</if>
+            <if test="tvDirector != null  and tvDirector != ''"> and TV_Director = #{tvDirector}</if>
+            <if test="tvYear != null "> and TV_Year = #{tvYear}</if>
+            <if test="tvLanguage != null  and tvLanguage != ''"> and TV_Language = #{tvLanguage}</if>
+            <if test="tvCc != null  and tvCc != ''"> and TV_CC = #{tvCc}</if>
+        </where>
+    </select>
+    
+    <select id="selectTVByTvName" parameterType="String" resultMap="TVResult">
+        <include refid="selectTVVo"/>
+        where TV_Name = #{tvName}
+    </select>
+        
+    <insert id="insertTV" parameterType="TV">
+        insert into TV
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tvName != null">TV_Name,</if>
+            <if test="tvGenre != null">TV_Genre,</if>
+            <if test="tvLength != null">TV_Length,</if>
+            <if test="tvDirector != null">TV_Director,</if>
+            <if test="tvYear != null">TV_Year,</if>
+            <if test="tvLanguage != null">TV_Language,</if>
+            <if test="tvCc != null">TV_CC,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tvName != null">#{tvName},</if>
+            <if test="tvGenre != null">#{tvGenre},</if>
+            <if test="tvLength != null">#{tvLength},</if>
+            <if test="tvDirector != null">#{tvDirector},</if>
+            <if test="tvYear != null">#{tvYear},</if>
+            <if test="tvLanguage != null">#{tvLanguage},</if>
+            <if test="tvCc != null">#{tvCc},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTV" parameterType="TV">
+        update TV
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tvGenre != null">TV_Genre = #{tvGenre},</if>
+            <if test="tvLength != null">TV_Length = #{tvLength},</if>
+            <if test="tvDirector != null">TV_Director = #{tvDirector},</if>
+            <if test="tvYear != null">TV_Year = #{tvYear},</if>
+            <if test="tvLanguage != null">TV_Language = #{tvLanguage},</if>
+            <if test="tvCc != null">TV_CC = #{tvCc},</if>
+        </trim>
+        where TV_Name = #{tvName}
+    </update>
+
+    <delete id="deleteTVByTvName" parameterType="String">
+        delete from TV where TV_Name = #{tvName}
+    </delete>
+
+    <delete id="deleteTVByTvNames" parameterType="String">
+        delete from TV where TV_Name in 
+        <foreach item="tvName" collection="array" open="(" separator="," close=")">
+            #{tvName}
+        </foreach>
+    </delete>
+</mapper>

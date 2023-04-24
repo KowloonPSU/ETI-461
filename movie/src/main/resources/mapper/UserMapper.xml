@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movie.mapper.UserMapper">
+    
+    <resultMap type="User" id="UserResult">
+        <result property="userId"    column="User_ID"    />
+        <result property="userEmail"    column="User_Email"    />
+        <result property="userPassword"    column="User_Password"    />
+        <result property="userName"    column="User_Name"    />
+        <result property="billingDate"    column="Billing_Date"    />
+        <result property="userPlan"    column="User_Plan"    />
+    </resultMap>
+
+    <sql id="selectUserVo">
+        select User_ID, User_Email, User_Password, User_Name, Billing_Date, User_Plan from User
+    </sql>
+
+    <select id="selectUserList" parameterType="User" resultMap="UserResult">
+        <include refid="selectUserVo"/>
+        <where>  
+            <if test="userEmail != null  and userEmail != ''"> and User_Email = #{userEmail}</if>
+            <if test="userPassword != null  and userPassword != ''"> and User_Password = #{userPassword}</if>
+            <if test="userName != null  and userName != ''"> and User_Name like concat('%', #{userName}, '%')</if>
+            <if test="billingDate != null  and billingDate != ''"> and Billing_Date = #{billingDate}</if>
+            <if test="userPlan != null  and userPlan != ''"> and User_Plan = #{userPlan}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserByUserId" parameterType="String" resultMap="UserResult">
+        <include refid="selectUserVo"/>
+        where User_ID = #{userId}
+    </select>
+        
+    <insert id="insertUser" parameterType="User">
+        insert into User
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">User_ID,</if>
+            <if test="userEmail != null">User_Email,</if>
+            <if test="userPassword != null">User_Password,</if>
+            <if test="userName != null">User_Name,</if>
+            <if test="billingDate != null">Billing_Date,</if>
+            <if test="userPlan != null">User_Plan,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="userEmail != null">#{userEmail},</if>
+            <if test="userPassword != null">#{userPassword},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="billingDate != null">#{billingDate},</if>
+            <if test="userPlan != null">#{userPlan},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        update User
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userEmail != null">User_Email = #{userEmail},</if>
+            <if test="userPassword != null">User_Password = #{userPassword},</if>
+            <if test="userName != null">User_Name = #{userName},</if>
+            <if test="billingDate != null">Billing_Date = #{billingDate},</if>
+            <if test="userPlan != null">User_Plan = #{userPlan},</if>
+        </trim>
+        where User_ID = #{userId}
+    </update>
+
+    <delete id="deleteUserByUserId" parameterType="String">
+        delete from User where User_ID = #{userId}
+    </delete>
+
+    <delete id="deleteUserByUserIds" parameterType="String">
+        delete from User where User_ID in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+</mapper>

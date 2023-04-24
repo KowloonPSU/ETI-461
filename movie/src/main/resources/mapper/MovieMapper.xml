@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.movie.mapper.MovieMapper">
+    
+    <resultMap type="Movie" id="MovieResult">
+        <result property="movieName"    column="Movie_Name"    />
+        <result property="movieGenre"    column="Movie_Genre"    />
+        <result property="movieLength"    column="Movie_Length"    />
+        <result property="movieDirector"    column="Movie_Director"    />
+        <result property="movieYear"    column="Movie_Year"    />
+        <result property="movieLanguage"    column="Movie_Language"    />
+        <result property="movieCc"    column="Movie_CC"    />
+    </resultMap>
+
+    <sql id="selectMovieVo">
+        select Movie_Name, Movie_Genre, Movie_Length, Movie_Director, Movie_Year, Movie_Language, Movie_CC from Movie
+    </sql>
+
+    <select id="selectMovieList" parameterType="Movie" resultMap="MovieResult">
+        <include refid="selectMovieVo"/>
+        <where>  
+            <if test="movieGenre != null  and movieGenre != ''"> and Movie_Genre = #{movieGenre}</if>
+            <if test="movieLength != null  and movieLength != ''"> and Movie_Length = #{movieLength}</if>
+            <if test="movieDirector != null  and movieDirector != ''"> and Movie_Director = #{movieDirector}</if>
+            <if test="movieYear != null "> and Movie_Year = #{movieYear}</if>
+            <if test="movieLanguage != null  and movieLanguage != ''"> and Movie_Language = #{movieLanguage}</if>
+            <if test="movieCc != null  and movieCc != ''"> and Movie_CC = #{movieCc}</if>
+        </where>
+    </select>
+    
+    <select id="selectMovieByMovieName" parameterType="String" resultMap="MovieResult">
+        <include refid="selectMovieVo"/>
+        where Movie_Name = #{movieName}
+    </select>
+        
+    <insert id="insertMovie" parameterType="Movie">
+        insert into Movie
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="movieName != null">Movie_Name,</if>
+            <if test="movieGenre != null">Movie_Genre,</if>
+            <if test="movieLength != null">Movie_Length,</if>
+            <if test="movieDirector != null">Movie_Director,</if>
+            <if test="movieYear != null">Movie_Year,</if>
+            <if test="movieLanguage != null">Movie_Language,</if>
+            <if test="movieCc != null">Movie_CC,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="movieName != null">#{movieName},</if>
+            <if test="movieGenre != null">#{movieGenre},</if>
+            <if test="movieLength != null">#{movieLength},</if>
+            <if test="movieDirector != null">#{movieDirector},</if>
+            <if test="movieYear != null">#{movieYear},</if>
+            <if test="movieLanguage != null">#{movieLanguage},</if>
+            <if test="movieCc != null">#{movieCc},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMovie" parameterType="Movie">
+        update Movie
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="movieGenre != null">Movie_Genre = #{movieGenre},</if>
+            <if test="movieLength != null">Movie_Length = #{movieLength},</if>
+            <if test="movieDirector != null">Movie_Director = #{movieDirector},</if>
+            <if test="movieYear != null">Movie_Year = #{movieYear},</if>
+            <if test="movieLanguage != null">Movie_Language = #{movieLanguage},</if>
+            <if test="movieCc != null">Movie_CC = #{movieCc},</if>
+        </trim>
+        where Movie_Name = #{movieName}
+    </update>
+
+    <delete id="deleteMovieByMovieName" parameterType="String">
+        delete from Movie where Movie_Name = #{movieName}
+    </delete>
+
+    <delete id="deleteMovieByMovieNames" parameterType="String">
+        delete from Movie where Movie_Name in 
+        <foreach item="movieName" collection="array" open="(" separator="," close=")">
+            #{movieName}
+        </foreach>
+    </delete>
+</mapper>

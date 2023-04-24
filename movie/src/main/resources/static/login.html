@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app">
+    <el-row style="margin-top: 100px" :gutter="20" type="flex" class="row-bg" justify="center">
+        <el-col :span="6">
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="用户名" placeholder="请选择语言">
+                    <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" placeholder="请选择语言">
+                    <el-input v-model="form.password" placeholder="请输入密码"></el-input>
+                </el-form-item>
+                <el-button type="primary" @click="login" >登录</el-button>
+            </el-form>
+        </el-col>
+    </el-row>
+</div>
+<script>
+    let _this;
+    let app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                form:{
+                    username: "",
+                    password: ""
+                },
+            }
+        },
+        mounted() {
+            _this = this
+        },
+        methods: {
+            login(){
+                if (_this.form.username === ""){
+                    this.$message({
+                        message: '用户名不能为空',
+                        type: 'warning'
+                    });
+                    return
+                }
+                if (_this.form.password === ""){
+                    this.$message({
+                        message: '密码不能为空',
+                        type: 'warning'
+                    });
+                    return;
+                }
+                if (_this.form.username === "admin" && _this.form.password==="123456"){
+                    window.location.href = "http://localhost:10100/index.html";
+                }
+                if (_this.form.username !== "admin"){
+                    this.$message({
+                        message: '账号错误',
+                        type: 'warning'
+                    });
+                    return;
+                }
+                if (_this.form.password==="123456"){
+                    this.$message({
+                        message: '密码错误',
+                        type: 'warning'
+                    });
+                    return;
+                }
+            }
+        }
+    })
+</script>
+</body>
+</html>

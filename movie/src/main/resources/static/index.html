@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app">
+
+    <el-row :gutter="20" type="flex" class="row-bg" justify="center">
+        <el-col :span="20">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="电影Movie" name="first">
+
+                    <el-table :data="movieList" style="width: 100%">
+                        <el-table-column label="电影名" align="center" prop="movieName"></el-table-column>
+                        <el-table-column label="电影类型" align="center" prop="movieGenre"></el-table-column>
+                        <el-table-column label="电影时长" align="center" prop="movieLength"></el-table-column>
+                        <el-table-column label="电影简介" align="center" prop="movieDirector"></el-table-column>
+                        <el-table-column label="电影年份" align="center" prop="movieYear"></el-table-column>
+                        <el-table-column label="电影语言" align="center" prop="movieLanguage"></el-table-column>
+                        <el-table-column label="电影Cc" align="center" prop="movieCc"></el-table-column>
+                    </el-table>
+
+                </el-tab-pane>
+                <el-tab-pane label="电视TV" name="second">
+
+                    <el-table :data="tVList" style="width: 100%">
+                        <el-table-column label="tv名" align="center" prop="tvName"></el-table-column>
+                        <el-table-column label="tv类型" align="center" prop="tvGenre"></el-table-column>
+                        <el-table-column label="tv时长" align="center" prop="tvLength"></el-table-column>
+                        <el-table-column label="tv简介" align="center" prop="tvDirector"></el-table-column>
+                        <el-table-column label="tv年份" align="center" prop="tvYear"></el-table-column>
+                        <el-table-column label="tv语言" align="center" prop="tvLanguage"></el-table-column>
+                        <el-table-column label="tvCc" align="center" prop="tvCc"></el-table-column>
+                    </el-table>
+
+                </el-tab-pane>
+                <el-tab-pane label="账户Account" name="third">
+
+                    <el-table :data="userList" style="width: 100%">
+                        <el-table-column label="用户ID" align="center" prop="userId"></el-table-column>
+                        <el-table-column label="用户邮件" align="center" prop="userEmail"></el-table-column>
+                        <el-table-column label="用户密码" align="center" prop="userPassword"></el-table-column>
+                        <el-table-column label="用户名" align="center" prop="userName"></el-table-column>
+                        <el-table-column label="计费日期" align="center" prop="billingDate"></el-table-column>
+                        <el-table-column label="用户计划" align="center" prop="userPlan"></el-table-column>
+                    </el-table>
+
+                </el-tab-pane>
+                <el-tab-pane label="信息Media" name="fourth">
+
+                    <el-row :gutter="20" type="flex" class="row-bg">
+<!--                        <span>年份检索:</span>-->
+                        <el-col :span="6">
+                                <el-input
+                                        maxlength="80"
+                                        placeholder="请输入年份"
+                                        v-model="from.year"
+                                        clearable>
+                                </el-input>
+                        </el-col>
+                        <el-col :span="6">
+<!--                            <span>语言检索:</span>-->
+                                <el-select v-model="from.language" clearable placeholder="请选择语言">
+                                    <el-option
+                                            v-for="item in options"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                        </el-col>
+                        <el-col :span="6">
+<!--                            <span>名称检索:</span>-->
+                                <el-input
+                                        maxlength="80"
+                                        placeholder="请输入名称关键词"
+                                        v-model="from.name"
+                                        clearable>
+                                </el-input>
+                        </el-col>
+
+<!--                        <el-col :span="6">-->
+<!--                        <el-switch-->
+<!--                                v-model="from.cc"-->
+<!--                                active-text="yes"-->
+<!--                                inactive-text="no">-->
+<!--                        </el-switch>-->
+<!--                        </el-col>-->
+
+                        <el-col :span="6">
+                                <el-button type="primary" @click="submit">检索</el-button>
+                        </el-col>
+                    </el-row>
+
+                    <el-table :data="mediaList" style="width: 100%">
+                        <el-table-column label="类型" align="center" prop="type">
+                            <template slot-scope="scope">
+                                <el-tag size="medium" v-if="scope.row.type === 0">TV</el-tag>
+                                <el-tag size="medium" v-if="scope.row.type === 1">电影</el-tag>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="名称" align="center" prop="name"></el-table-column>
+                        <el-table-column label="类型" align="center" prop="genre"></el-table-column>
+                        <el-table-column label="时长" align="center" prop="length"></el-table-column>
+                        <el-table-column label="简介" align="center" prop="director"></el-table-column>
+                        <el-table-column label="年份" align="center" prop="year"></el-table-column>
+                        <el-table-column label="语言" align="center" prop="language"></el-table-column>
+                        <el-table-column label="Cc" align="center" prop="cc"></el-table-column>
+                    </el-table>
+
+                </el-tab-pane>
+            </el-tabs>
+        </el-col>
+    </el-row>
+
+</div>
+<script>
+    let _this;
+    let app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                activeName: 'second',
+                movieList: [],
+                tVList: [],
+                userList: [],
+                mediaList: [],
+                from: {
+                    year: null,
+                    language: null,
+                    name: null,
+                    cc: null
+                },
+                options: [
+                    {
+                        value: "English",
+                        label: "英文"
+                    },
+                    {
+                        value: "Chinese",
+                        label: "中文"
+                    }
+                ],
+                server: 'http://localhost:10100',
+            }
+        },
+        mounted() {
+            _this = this
+            _this.submit()
+            axios(
+                {
+                    method: 'get',//提交方法
+                    url: this.server + '/bus/Movie/list',//提交地址
+                }
+            ).then(function (response) {
+                _this.movieList = response.data.rows
+
+            })
+
+            axios(
+                {
+                    method: 'get',//提交方法
+                    url: this.server + '/bus/TV/list',//提交地址
+                }
+            ).then(function (response) {
+                _this.tVList = response.data.rows
+
+            })
+
+            axios(
+                {
+                    method: 'get',//提交方法
+                    url: this.server + '/bus/User/list',//提交地址
+                }
+            ).then(function (response) {
+                _this.userList = response.data.rows
+
+            })
+        },
+        methods: {
+            handleClick(tab, event) {
+                console.log(tab, event);
+            },
+            submit(){
+                if (_this.from.language===''){
+                    _this.from.language = null
+                }
+                if (_this.from.year===''){
+                    _this.from.year = null
+                }
+                if (_this.from.name===''){
+                    _this.from.name = null
+                }
+                if (_this.from.cc===''){
+                    _this.from.cc = null
+                }
+                axios(
+                    {
+                        method: 'post',//提交方法
+                        url: this.server + '/bus/media/list',//提交地址
+                        data: _this.from
+                    }
+                ).then(function (response) {
+                    _this.mediaList = response.data.rows
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>
